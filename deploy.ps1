@@ -73,6 +73,7 @@ $tenantId = az account show --query tenantId -o tsv
 Write-Host "Registering Frontend App Registration in Entra ID..."
 $feAppReg = az ad app create --display-name "Governify-Frontend-$AppPrefix" --web-redirect-uris "https://$feAppName.azurewebsites.net/.auth/login/aad/callback" | ConvertFrom-Json
 $feClientId = $feAppReg.appId
+az ad app update --id $feClientId --enable-id-token-issuance true --enable-access-token-issuance true
 
 Write-Host "Generating client secret for AAD App..."
 $clientSecret = az ad app credential reset --id $feClientId --append --query "password" -o tsv
