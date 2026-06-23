@@ -57,7 +57,10 @@ const validateToken = (req, res, next) => {
 
   const options = {
     audience: process.env.CLIENT_ID || process.env.AUDIENCE,
-    issuer: `https://sts.windows.net/${tenantId}/`
+    issuer: [
+      `https://sts.windows.net/${tenantId}/`,
+      `https://login.microsoftonline.com/${tenantId}/v2.0`
+    ]
   };
 
   // If running in development and vars aren't set, allow skipping verification for easy debugging
