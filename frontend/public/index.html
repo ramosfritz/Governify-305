@@ -571,12 +571,12 @@
         const dotDbState = document.getElementById('dot-db');
         const dbBadge = document.getElementById('status-db');
 
-        if (data.backendHealth) {
+        if (data.backendHealth && data.backendHealth.status === "Healthy") {
           dotBeState.className = "status-dot active";
           beBadge.innerText = "Online";
           beBadge.style.color = "var(--success)";
 
-          if (data.backendHealth.database.startsWith("Connected") || data.backendHealth.database.startsWith("Mock")) {
+          if (data.backendHealth.database && (data.backendHealth.database.startsWith("Connected") || data.backendHealth.database.startsWith("Mock"))) {
             dotDbState.className = "status-dot active";
             dbBadge.innerText = data.backendHealth.database;
             dbBadge.style.color = "var(--success)";
@@ -589,6 +589,9 @@
           dotBeState.className = "status-dot error";
           beBadge.innerText = "Offline";
           beBadge.style.color = "var(--danger)";
+          dotDbState.className = "status-dot error";
+          dbBadge.innerText = "Offline";
+          dbBadge.style.color = "var(--danger)";
         }
       } catch (err) {
         showToast("Error pinging frontend health check", "danger");
