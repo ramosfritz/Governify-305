@@ -130,7 +130,36 @@ az monitor diagnostic-settings create --name "be-appservice-diagnostics" --resou
 Write-Host "Linking Azure SQL Database Diagnostics to Log Analytics..."
 az monitor diagnostic-settings create --name "sql-db-diagnostics" --resource "/subscriptions/$subscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Sql/servers/$sqlServerName/databases/$dbName" --workspace $lawResourceId --logs '[{"category":"SQLSecurityAuditEvents","enabled":true}]' --metrics '[{"category":"AllMetrics","enabled":true}]' --query "name" -o tsv
 
-# 6. Deployment Output Summary
+# 6. Deploy Code to Web Apps
+Write-Host "[6/6] Packaging and deploying application code..." -ForegroundColor Yellow
+
+# Configure Build settings during deployment
+az webapp config appsettings set --resource-group $ResourceGroupName --name $feAppName --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true --query "[?name=='SCM_DO_BUILD_DURING_DEPLOYMENT'].value" -o tsv
+az webapp config appsettings set --resource-group $ResourceGroupName --name $beAppName --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true --query "[?name=='SCM_DO_BUILD_DURING_DEPLOYMENT'].value" -o tsv
+
+# Zip frontend code (excluding node_modules)
+Write-Host "Zipping frontend application..."
+if (Test-Path .\frontend.zip) { Remove-Item .\frontend.zip }
+Get-ChildItem -Path .\frontend -Exclude "node_modules" | Compress-Archive -DestinationPath .\frontend.zip -Force
+
+# Zip backend code (excluding node_modules)
+Write-Host "Zipping backend API application..."
+if (Test-Path .\backend.zip) { Remove-Item .\backend.zip }
+Get-ChildItem -Path .\backend -Exclude "node_modules" | Compress-Archive -DestinationPath .\backend.zip -Force
+
+# Deploy Frontend Code
+Write-Host "Deploying Frontend Code to Azure Web App..."
+az webapp deploy --resource-group $ResourceGroupName --name $feAppName --src-path .\frontend.zip --type zip --async false
+
+# Deploy Backend Code
+Write-Host "Deploying Backend Code to Azure Web App..."
+az webapp deploy --resource-group $ResourceGroupName --name $beAppName --src-path .\backend.zip --type zip --async false
+
+# Clean up zip files
+Remove-Item .\frontend.zip
+Remove-Item .\backend.zip
+
+# 7. Deployment Output Summary
 Write-Host "=========================================" -ForegroundColor Green
 Write-Host " DEPLOYMENT COMPLETED SUCCESSFULLY       " -ForegroundColor Green
 Write-Host "=========================================" -ForegroundColor Green
