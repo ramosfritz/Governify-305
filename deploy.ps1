@@ -10,8 +10,8 @@
 
 [CmdletBinding()]
 param (
-    [string]$ResourceGroupName = "rg-governify",
-    [string]$Location = "eastus2",
+    [string]$ResourceGroupName = "rg-governify-central",
+    [string]$Location = "centralus",
     [string]$AppPrefix = "governify$(Get-Random -Minimum 1000 -Maximum 9999)",
     [string]$SqlAdminUser = "dbadmin",
     [string]$SqlAdminPassword = "P@ssw0rd1234!!$(Get-Random -Minimum 10 -Maximum 99)",
