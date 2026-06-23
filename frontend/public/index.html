@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Governify Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.07);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.15);
+      --accent-teal: #14b8a6;
+      --accent-teal-glow: rgba(20, 184, 166, 0.15);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header styling */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.5rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-teal));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .logo-text h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a5b4fc, #818cf8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg-color);
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: transparent;
+      transition: background 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card.primary-hover:hover::before {
+      background: linear-gradient(90deg, var(--primary), var(--accent-teal));
+    }
+
+    .card.danger-hover:hover::before {
+      background: var(--danger);
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Status Items */
+    .status-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+    }
+
+    .status-label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      display: inline-block;
+      box-shadow: 0 0 8px transparent;
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.active {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    .status-dot.warn {
+      background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
+    }
+
+    .status-dot.error {
+      background: var(--danger);
+      box-shadow: 0 0 10px var(--danger);
+    }
+
+    .badge-status {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Form & Action Elements */
+    .btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      color: white;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid var(--warning);
+      color: var(--warning);
+    }
+
+    .btn-warning:hover {
+      background: var(--warning);
+      color: white;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+    }
+
+    /* Table styling */
+    .table-container {
+      margin-top: 1rem;
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    td {
+      padding: 1rem;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    /* Identity Details Card List */
+    .metadata-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .metadata-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.5rem;
+    }
+
+    .metadata-key {
+      color: var(--text-muted);
+    }
+
+    .metadata-val {
+      font-family: monospace;
+      color: #38bdf8;
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Alert / Alert Test Simulator Area */
+    .alert-panel {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    /* Toast notification */
+    .toast-box {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .toast {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--card-border);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      min-width: 300px;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .toast.success { border-left: 4px solid var(--success); }
+    .toast.warning { border-left: 4px solid var(--warning); }
+    .toast.danger { border-left: 4px solid var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-container">
+        <div class="logo-icon">G</div>
+        <div class="logo-text">
+          <h1>Governify</h1>
+          <p>Identity & Governance Portal</p>
+        </div>
+      </div>
+      <div class="user-badge" id="user-badge">
+        <div class="user-avatar" id="avatar-letter">U</div>
+        <span class="user-name" id="user-display-name">Loading Profile...</span>
+      </div>
+    </header>
+
+    <!-- Dashboard Content Grid -->
+    <div class="grid">
+      <!-- Card 1: Identity & Authentication -->
+      <div class="card primary-hover">
+        <h2 class="card-title">
+          <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z" /></svg>
+          Microsoft Entra ID Profile
+        </h2>
+        <div class="metadata-list" id="identity-details">
+          <div class="metadata-row">
+            <span class="metadata-key">User Principal Name</span>
+            <span class="metadata-val" id="profile-upn">Fetching...</span>
+          </div>
+          <div class="metadata-row">
+            <span class="metadata-key">Object ID</span>
+            <span class="metadata-val" id="profile-oid">Fetching...</span>
+          </div>
+          <div class="metadata-row">
+            <span class="metadata-key">Auth Mechanism</span>
+            <span class="metadata-val" id="profile-auth">App Service Easy Auth</span>
+          </div>
+          <div class="metadata-row">
+            <span class="metadata-key">Tenant Issuer</span>
+            <span class="metadata-val" id="profile-issuer">Fetching...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Environment Integration Status -->
+      <div class="card primary-hover">
+        <h2 class="card-title">
+          <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A1.5,1.5 0 0,1 13.5,7.5A1.5,1.5 0 0,1 12,9A1.5,1.5 0 0,1 10.5,7.5A1.5,1.5 0 0,1 12,6M11,10H13V18H11V10Z" /></svg>
+          System Health & Diagnostic Connection
+        </h2>
+        <div class="status-group">
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot active" id="dot-fe"></span> Frontend Web Portal
+            </span>
+            <span class="badge-status">Online</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot" id="dot-be"></span> Backend API Service
+            </span>
+            <span class="badge-status" id="status-be">Checking...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot" id="dot-db"></span> Azure SQL Database
+            </span>
+            <span class="badge-status" id="status-db">Checking...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Database Explorer -->
+      <div class="card primary-hover" style="grid-column: span 2;">
+        <h2 class="card-title" style="justify-content: space-between;">
+          <span style="display:flex; align-items:center; gap:0.5rem;">
+            <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,3C7.58,3 4,4.79 4,7C4,9.21 7.58,11 12,11C16.42,11 20,9.21 20,7C20,4.79 16.42,3 12,3M4,9V12C4,14.21 7.58,16 12,16C16.42,16 20,14.21 20,12V9C20,11.21 16.42,13 12,13C7.58,13 4,11.21 4,9M4,14V17C4,19.21 7.58,21 12,21C16.42,21 20,19.21 20,17V14C20,16.21 16.42,18 12,18C7.58,18 4,16.21 4,14Z" /></svg>
+            Database Explorer
+          </span>
+          <button class="btn btn-primary" id="btn-fetch">
+            Fetch Items
+          </button>
+        </h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="db-table-body">
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted);">Click "Fetch Items" to request database rows...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Card 4: Azure Monitor Logs / Alerts Simulator -->
+      <div class="card danger-hover" style="grid-column: span 2;">
+        <h2 class="card-title">
+          <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2L1,21H23L12,2M12,6L19.53,19H4.47L12,6M11,9V13H13V9H11M11,15V17H13V15H11Z" /></svg>
+          Azure Monitor Telemetry Simulator
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Trigger artificial warning or error events. The backend uses the Azure Monitor OpenTelemetry SDK to pipe these logs into your Log Analytics Workspace to trigger configured alert rules.
+        </p>
+        <div class="alert-panel">
+          <button class="btn btn-warning" id="btn-sim-warn">Trigger Warning Log</button>
+          <button class="btn btn-danger" id="btn-sim-error">Trigger Critical Error (Alert)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-box" id="toast-box"></div>
+
+  <script>
+    // System APIs UI integration
+    const apiBase = ""; // Internal reverse proxy to Backend API
+
+    function showToast(message, type = 'success') {
+      const box = document.getElementById('toast-box');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <span>${message}</span>
+      `;
+      box.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    async function checkHealth() {
+      try {
+        const response = await fetch('/status');
+        const data = await response.json();
+        
+        // Render Identity details
+        if (data.user) {
+          document.getElementById('user-display-name').innerText = data.user.name || data.user.upn;
+          document.getElementById('avatar-letter').innerText = (data.user.name || "U")[0].toUpperCase();
+          document.getElementById('profile-upn').innerText = data.user.upn || 'N/A';
+          document.getElementById('profile-oid').innerText = data.user.oid || 'N/A';
+          document.getElementById('profile-issuer').innerText = data.user.iss || 'N/A';
+        } else {
+          document.getElementById('user-display-name').innerText = "Developer Session (Unauthenticated)";
+          document.getElementById('profile-upn').innerText = 'dev@local';
+          document.getElementById('profile-oid').innerText = 'd8f8a11e-089c-45a7';
+          document.getElementById('profile-issuer').innerText = 'Local Dev Issuer';
+        }
+
+        // Render Status indicators
+        const dotBe = document.getElementById('dot-fe');
+        
+        const dotBeState = document.getElementById('dot-be');
+        const beBadge = document.getElementById('status-be');
+        const dotDbState = document.getElementById('dot-db');
+        const dbBadge = document.getElementById('status-db');
+
+        if (data.backendHealth) {
+          dotBeState.className = "status-dot active";
+          beBadge.innerText = "Online";
+          beBadge.style.color = "var(--success)";
+
+          if (data.backendHealth.database.startsWith("Connected") || data.backendHealth.database.startsWith("Mock")) {
+            dotDbState.className = "status-dot active";
+            dbBadge.innerText = data.backendHealth.database;
+            dbBadge.style.color = "var(--success)";
+          } else {
+            dotDbState.className = "status-dot error";
+            dbBadge.innerText = "Error";
+            dbBadge.style.color = "var(--danger)";
+          }
+        } else {
+          dotBeState.className = "status-dot error";
+          beBadge.innerText = "Offline";
+          beBadge.style.color = "var(--danger)";
+        }
+      } catch (err) {
+        showToast("Error pinging frontend health check", "danger");
+      }
+    }
+
+    // Fetch Database Items
+    document.getElementById('btn-fetch').addEventListener('click', async () => {
+      const tbody = document.getElementById('db-table-body');
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Fetching data...</td></tr>`;
+
+      try {
+        const response = await fetch('/data');
+        if (!response.ok) throw new Error(await response.text());
+        const data = await response.json();
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No items returned from database.</td></tr>`;
+        } else {
+          tbody.innerHTML = data.map(item => `
+            <tr>
+              <td>${item.id || item.ID || 1}</td>
+              <td style="font-weight:600;">${item.name || item.Name || 'Demo'}</td>
+              <td>${item.category || item.Category || 'Azure'}</td>
+              <td><span style="color:var(--success)">● Available</span></td>
+            </tr>
+          `).join('');
+          showToast("Retrieved database records successfully", "success");
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--danger);">Error fetching items: ${err.message}</td></tr>`;
+        showToast("Database fetch failed", "danger");
+      }
+    });
+
+    // Simulate logs/errors
+    document.getElementById('btn-sim-warn').addEventListener('click', () => sendSimulateLog('warning'));
+    document.getElementById('btn-sim-error').addEventListener('click', () => sendSimulateLog('critical'));
+
+    async function sendSimulateLog(severity) {
+      try {
+        const response = await fetch('/trigger-error', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ severity })
+        });
+        const data = await response.json();
+        
+        if (severity === 'critical') {
+          showToast("Simulated CRITICAL Error logged to Azure Monitor!", "danger");
+        } else {
+          showToast("Simulated Warning logged successfully.", "warning");
+        }
+      } catch (err) {
+        showToast("Failed to communicate with diagnostic endpoint", "danger");
+      }
+    }
+
+    // Run on load
+    checkHealth();
+  </script>
+</body>
+</html>

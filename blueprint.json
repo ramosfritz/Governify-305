@@ -1,0 +1,7 @@
+{
+  "properties": {
+    "targetScope": "subscription",
+    "displayName": "Governify Governance Blueprint",
+    "description": "Enforces Environment tagging policy on all subscription resource deployments."
+  }
+}
