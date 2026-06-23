@@ -11,7 +11,7 @@
 [CmdletBinding()]
 param (
     [string]$ResourceGroupName = "rg-governify",
-    [string]$Location = "eastus",
+    [string]$Location = "eastus2",
     [string]$AppPrefix = "governify$(Get-Random -Minimum 1000 -Maximum 9999)",
     [string]$SqlAdminUser = "dbadmin",
     [string]$SqlAdminPassword = "P@ssw0rd1234!!$(Get-Random -Minimum 10 -Maximum 99)",
@@ -47,7 +47,7 @@ az group create --name $ResourceGroupName --location $Location --tags Environmen
 
 Write-Host "Creating Linux App Service Plan..."
 $aspName = "asp-$AppPrefix"
-az appservice plan create --name $aspName --resource-group $ResourceGroupName --location $Location --sku B1 --is-linux --query "provisioningState" -o tsv
+az appservice plan create --name $aspName --resource-group $ResourceGroupName --location $Location --sku F1 --is-linux --query "provisioningState" -o tsv
 
 Write-Host "Creating Frontend Web App..."
 $feAppName = "$AppPrefix-frontend"
