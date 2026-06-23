@@ -137,15 +137,23 @@ Write-Host "[6/6] Packaging and deploying application code..." -ForegroundColor 
 az webapp config appsettings set --resource-group $ResourceGroupName --name $feAppName --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true --query "[?name=='SCM_DO_BUILD_DURING_DEPLOYMENT'].value" -o tsv
 az webapp config appsettings set --resource-group $ResourceGroupName --name $beAppName --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true --query "[?name=='SCM_DO_BUILD_DURING_DEPLOYMENT'].value" -o tsv
 
-# Zip frontend code (excluding node_modules)
+# Zip frontend code (excluding node_modules recursively)
 Write-Host "Zipping frontend application..."
+if (Test-Path .\temp-frontend) { Remove-Item .\temp-frontend -Recurse -Force }
+New-Item -ItemType Directory -Path .\temp-frontend | Out-Null
+Copy-Item -Path .\frontend\* -Destination .\temp-frontend -Recurse -Exclude "node_modules"
 if (Test-Path .\frontend.zip) { Remove-Item .\frontend.zip }
-Get-ChildItem -Path .\frontend -Exclude "node_modules" | Compress-Archive -DestinationPath .\frontend.zip -Force
+Compress-Archive -Path .\temp-frontend\* -DestinationPath .\frontend.zip -Force
+Remove-Item .\temp-frontend -Recurse -Force
 
-# Zip backend code (excluding node_modules)
+# Zip backend code (excluding node_modules recursively)
 Write-Host "Zipping backend API application..."
+if (Test-Path .\temp-backend) { Remove-Item .\temp-backend -Recurse -Force }
+New-Item -ItemType Directory -Path .\temp-backend | Out-Null
+Copy-Item -Path .\backend\* -Destination .\temp-backend -Recurse -Exclude "node_modules"
 if (Test-Path .\backend.zip) { Remove-Item .\backend.zip }
-Get-ChildItem -Path .\backend -Exclude "node_modules" | Compress-Archive -DestinationPath .\backend.zip -Force
+Compress-Archive -Path .\temp-backend\* -DestinationPath .\backend.zip -Force
+Remove-Item .\temp-backend -Recurse -Force
 
 # Deploy Frontend Code
 Write-Host "Deploying Frontend Code to Azure Web App..."
