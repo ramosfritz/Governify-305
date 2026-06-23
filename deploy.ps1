@@ -51,11 +51,11 @@ az appservice plan create --name $aspName --resource-group $ResourceGroupName --
 
 Write-Host "Creating Frontend Web App..."
 $feAppName = "$AppPrefix-frontend"
-az webapp create --name $feAppName --plan $aspName --resource-group $ResourceGroupName --runtime "NODE:18-lts" --query "state" -o tsv
+az webapp create --name $feAppName --plan $aspName --resource-group $ResourceGroupName --runtime "NODE:22-lts" --query "state" -o tsv
 
 Write-Host "Creating Backend API App..."
 $beAppName = "$AppPrefix-backend"
-az webapp create --name $beAppName --plan $aspName --resource-group $ResourceGroupName --runtime "NODE:18-lts" --query "state" -o tsv
+az webapp create --name $beAppName --plan $aspName --resource-group $ResourceGroupName --runtime "NODE:22-lts" --query "state" -o tsv
 
 Write-Host "Creating Azure SQL Database..."
 $sqlServerName = "$AppPrefix-sql"
