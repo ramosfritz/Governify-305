@@ -111,10 +111,10 @@ resource "azurerm_mssql_server" "sql" {
 }
 
 resource "azurerm_mssql_database" "db" {
-  name         = "db-governify"
-  server_id    = azurerm_mssql_server.sql.id
-  sku_name     = "Basic"
-  max_size_gb  = 2
+  name        = "db-governify"
+  server_id   = azurerm_mssql_server.sql.id
+  sku_name    = "Basic"
+  max_size_gb = 2
 }
 
 resource "azurerm_mssql_firewall_rule" "allow_azure_services" {
