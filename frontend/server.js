@@ -14,7 +14,7 @@ const axios = require('axios');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8888;
 const backendUrl = process.env.BACKEND_API_URL || "http://localhost:3000";
 
 app.use(express.json());
