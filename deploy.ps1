@@ -74,8 +74,11 @@ Write-Host "Registering Frontend App Registration in Entra ID..."
 $feAppReg = az ad app create --display-name "Governify-Frontend-$AppPrefix" --web-redirect-uris "https://$feAppName.azurewebsites.net/.auth/login/aad/callback" | ConvertFrom-Json
 $feClientId = $feAppReg.appId
 
+Write-Host "Generating client secret for AAD App..."
+$clientSecret = az ad app credential reset --id $feClientId --append --query "password" -o tsv
+
 Write-Host "Configuring App Service Easy Auth on Frontend..."
-az webapp auth update --resource-group $ResourceGroupName --name $feAppName --enabled true --action LoginWithAzureActiveDirectory --aad-client-id $feClientId --aad-token-issuer-url "https://sts.windows.net/$tenantId/v2.0" --query "enabled" -o tsv
+az webapp auth update --resource-group $ResourceGroupName --name $feAppName --enabled true --action LoginWithAzureActiveDirectory --aad-client-id $feClientId --aad-client-secret $clientSecret --aad-token-issuer-url "https://sts.windows.net/$tenantId/v2.0" --query "enabled" -o tsv
 
 # 4. Setup Governance (Policies & Blueprints)
 Write-Host "[4/6] Registering Governance Policies..." -ForegroundColor Yellow
